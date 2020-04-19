@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: webapp-production
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      run: webapp
+  template:
+    metadata:
+      labels:
+        run: webapp
+    spec:
+      volumes:
+      - name: web-sock
+        emptyDir: {}
+      containers:
+      - name: nginx
+        image: gcr.io/rich-city-274720/proxyapp-nginx:latest
+        imagePullPolicy: "Always"
+        volumeMounts:
+        - mountPath: /tmp
+          name: web-sock
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+        - name: REDIS_SSL_HOST
+          value: "redis-15849.c1.us-central1-2.gce.cloud.redislabs.com"
+        - name: REDIS_SSL_PORT
+          value: "15849"
+        - name: REDIS_SSL_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: proxyapp-secrets
+              key: REDIS_SSL_AUTH
+      - name: proxyapp
+        image: gcr.io/rich-city-274720/proxyapp:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: /tmp
+          name: web-sock
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: proxyapp-secrets
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: proxyapp-secrets
+              key: REDIS_URL
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: proxyapp-secrets
+              key: SECRET_KEY_BASE
+        - name: RAILS_LOG_TO_STDOUT
+          value: "false"
+        - name: EXECJS_RUNTIME
+          value: "Node"

@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  completions: 1
+  template:
+    metadata:
+      name: db-migrate
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: proxyapp
+        image: gcr.io/rich-city-274720/proxyapp:<VERSION>
+        args: ["bundle", "exec",  "rake", "db:create", "db:migrate"]
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: proxyapp-secrets
+              key: DATABASE_URL
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: proxyapp-secrets
+              key: SECRET_KEY_BASE
