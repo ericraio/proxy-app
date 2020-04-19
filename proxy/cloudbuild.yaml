@@ -1,0 +1,12 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'sh'
+  args:
+    - '-c'
+    - |
+      docker pull gcr.io/$PROJECT_ID/proxyapp-proxy:latest || true
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--cache-from', 'gcr.io/$PROJECT_ID/proxyapp-proxy:latest', '-t', 'gcr.io/$PROJECT_ID/proxyapp-proxy:latest', '.' ]
+images:
+- 'gcr.io/$PROJECT_ID/proxyapp-proxy:latest'
+timeout: 3600s
