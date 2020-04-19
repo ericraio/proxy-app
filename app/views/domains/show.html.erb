@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Host:</strong>
+  <%= @domain.host %>
+</p>
+
+<p>
+  <strong>Origin:</strong>
+  <%= @domain.origin %>
+</p>
+
+<p>
+  <strong>Verified:</strong>
+  <%= @domain.verified %>
+</p>
+
+<%= link_to 'Edit', edit_domain_path(@domain) %> |
+<%= link_to 'Back', domains_path %>
