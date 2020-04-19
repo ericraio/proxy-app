@@ -45,7 +45,12 @@ all:
 
 .PHONY: build
 build:
-	gcloud builds submit --config cloudbuild.yaml .
+	version=$$(git rev-parse HEAD); \
+	git update-index --assume-unchanged cloudbuild.yaml; \
+	sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
+	gcloud builds submit --config cloudbuild.yaml .; \
+	git update-index --no-assume-unchanged cloudbuild.yaml; \
+	git checkout cloudbuild.yaml;
 
 .PHONY: docker-build
 docker-build:
