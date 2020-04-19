@@ -4,7 +4,7 @@ NGINX             ?= nginx
 WEB               ?= webapp
 STAGE             ?= production
 NGINX_DEPLOYMENT  ?= $(WEB)-$(STAGE)
-REGISTRY          ?= gcr.io/proxy-app-274720
+REGISTRY          ?= gcr.io/rich-city-274720
 IMAGE              = $(REGISTRY)/$(PROJECT):$(TAG)
 
 .PHONY: all
