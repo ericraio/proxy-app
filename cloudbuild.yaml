@@ -1,0 +1,25 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: "Pulling previous build for cache"
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker pull gcr.io/$PROJECT_ID/proxyapp:latest || true
+
+  # Build image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Building image'
+    args: ['build', '--cache-from', 'gcr.io/$PROJECT_ID/proxyapp:latest', '-t', 'gcr.io/$PROJECT_ID/proxyapp:latest', '.' ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Tagging image'
+    args: ['tag', 'gcr.io/$PROJECT_ID/proxyapp', 'gcr.io/$PROJECT_ID/proxyapp:<VERSION>' ]
+
+options:
+    machineType: 'N1_HIGHCPU_8'
+timeout: 3600s
+tags: [ 'cloudbuild' ]
+images:
+  - 'gcr.io/$PROJECT_ID/proxyapp:<VERSION>'
+  - 'gcr.io/$PROJECT_ID/proxyapp:latest'
