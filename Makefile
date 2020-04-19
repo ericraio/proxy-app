@@ -46,6 +46,11 @@ all:
 .PHONY: build
 build:
 	version=$$(git rev-parse HEAD); \
+    BABEL_ENV=production RAILS_ENV=production && \
+    bundle exec rake assets:clobber && \
+    bundle exec rake webpacker:clobber && \
+    bundle exec rails webpacker:compile && \
+    bundle exec rake assets:precompile; \
 	git update-index --assume-unchanged cloudbuild.yaml; \
 	sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
 	gcloud builds submit --config cloudbuild.yaml .; \
@@ -60,11 +65,15 @@ docker-build:
 deploy:
 	@status=$$(git status --porcelain); \
     if test "x$${status}" = x; then \
-	    version=$$(git rev-parse HEAD); \
+      version=$$(git rev-parse HEAD); \
       git branch -f master; \
       git pull origin master; \
       bundle exec rails i18n:js:export; \
       BABEL_ENV=production RAILS_ENV=production && \
+      bundle exec rake assets:clobber && \
+      bundle exec rake webpacker:clobber && \
+      bundle exec rails webpacker:compile && \
+      bundle exec rake assets:precompile; \
       git update-index --assume-unchanged deploy/deploy.yml deploy/sidekiq.yml deploy/cron.yml cloudbuild.yaml; \
       sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
       gcloud builds submit --config cloudbuild.yaml .; \
