@@ -33,6 +33,9 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Health Check
 gem 'health_check'
 
+# Settings Configuration
+gem 'config'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]

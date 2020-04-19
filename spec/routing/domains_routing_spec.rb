@@ -2,6 +2,10 @@
 
 RSpec.describe DomainsController, type: :routing do
   describe 'routing' do
+    it 'routes the root to #index' do
+      expect(get: '/').to route_to('domains#index')
+    end
+
     it 'routes to #index' do
       expect(get: '/domains').to route_to('domains#index')
     end

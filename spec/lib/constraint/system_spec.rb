@@ -6,7 +6,7 @@ require 'constraint/system'
 describe Constraint::System do
   describe '.matches?' do
     context 'when subdomain is missing' do
-      let(:request) { double('request') }
+      let(:request) { double('request', subdomain: nil) }
 
       it 'returns false' do
         expect(Constraint::System.matches?(request)).to be false
@@ -16,7 +16,7 @@ describe Constraint::System do
     context 'when a subdomain is present' do
       context 'when the subdomain is set to `system`' do
         context 'when the request host matches the domain host`' do
-          let(:request) { double('request', subdomain: 'system', host: Settings.domain.host) }
+          let(:request) { double('request', subdomain: 'system', host: Settings.host) }
 
           it 'returns true' do
             expect(Constraint::System.matches?(request)).to be true
@@ -33,7 +33,7 @@ describe Constraint::System do
       end
 
       context 'when the subdomain is not system' do
-        let(:request) { double('request', subdomain: 'cdn', host: Settings.domain.host) }
+        let(:request) { double('request', subdomain: 'cdn', host: Settings.host) }
 
         it 'returns true' do
           expect(Constraint::System.matches?(request)).to be false
