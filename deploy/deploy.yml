@@ -68,3 +68,5 @@ spec:
           value: "false"
         - name: EXECJS_RUNTIME
           value: "Node"
+        - name: RAILS_SERVE_STATIC_FILES
+          value: "true"
