@@ -21,6 +21,25 @@ button:hover, input[type="button"]:hover, input[type="reset"]:hover, input[type=
   background-color: rgba(8, 166, 36, 1.000);
 }
 
-a, a:visited, a:focus {
+.cell-label a, a, a:hover, a:visited, a:focus {
   color: rgba(96, 166, 36, 1.000);
 }
+
+.cell-data a,
+.cell-data a:visited,
+.cell-data a:focus,
+.cell-data a:hover {
+  color: #293f54;
+}
+
+a.button,
+a.button:visited,
+a.button:focus,
+a.button:hover {
+  color: white;
+}
+
+aside {
+  padding: 25px;
+}
+
