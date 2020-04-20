@@ -21,6 +21,7 @@ button:hover, input[type="button"]:hover, input[type="reset"]:hover, input[type=
   background-color: rgba(8, 166, 36, 1.000);
 }
 
+.cell-label a,
 a,
 a:visited.
 a:focus {

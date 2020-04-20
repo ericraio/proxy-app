@@ -1,6 +1,7 @@
 require_relative 'boot'
 
 require 'rails/all'
+require_relative "../app/middleware/reverse_proxy"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -16,5 +17,7 @@ module ProxyApp
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
     config.active_job.queue_adapter = :sidekiq
+    config.hosts.clear
+    config.middleware.insert_before(ActionDispatch::Static, ReverseProxy::Middleware)
   end
 end
