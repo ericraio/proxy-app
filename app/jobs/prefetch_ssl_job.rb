@@ -2,7 +2,7 @@ class PrefetchSslJob < ApplicationJob
   queue_as :default
 
   def perform(url)
-    uri = URI(url)
+    uri = URI("http://#{url}")
     request = Net::HTTP::Get.new(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
