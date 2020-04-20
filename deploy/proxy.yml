@@ -15,7 +15,7 @@ spec:
   selector:
     app: nginx-lua-ssl
   type: LoadBalancer
-  loadBalancerIP: 104.198.158.227
+  loadBalancerIP: 104.198.159.227
   externalTrafficPolicy: Local
 ---
 apiVersion: apps/v1
@@ -57,7 +57,7 @@ spec:
         - containerPort: 443
         env:
         - name: APP_HOST
-          value: "app.proxyapp.com"
+          value: "app.ericsbookclub.com"
         - name: REDIS_SSL_HOST
           value: "redis-15849.c1.us-central1-2.gce.cloud.redislabs.com"
         - name: REDIS_SSL_PORT
