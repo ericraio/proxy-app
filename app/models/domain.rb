@@ -11,6 +11,9 @@ class Domain < ApplicationRecord
   validates :host, :origin, presence: true
 
   before_save do
-    PrefetchSslJob.set(wait: 10.seconds).perform_later(origin_change[0]) if origin_changed?
+    if origin_changed?
+      change = origin_change[1]
+      PrefetchSslJob.set(wait: 10.seconds).perform_later(change) if change
+    end
   end
 end
