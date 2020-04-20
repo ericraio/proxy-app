@@ -5,11 +5,9 @@ NGINX             ?= nginx
 WORKER            ?= sidekiq
 STAGE             ?= production
 PROXY             ?= proxy
-CRON              ?= cron
 WEB_DEPLOYMENT    ?= $(WEB)-$(STAGE)
 WORKER_DEPLOYMENT ?= $(WORKER)-$(STAGE)
 PROXY_DEPLOYMENT  ?= $(PROXY)-$(STAGE)
-CRON_DEPLOYMENT   ?= $(CRON)-$(STAGE)
 REGISTRY          ?= gcr.io/rich-city-274720
 IMAGE              = $(REGISTRY)/$(PROJECT):$(TAG)
 
@@ -27,17 +25,14 @@ all:
 	@echo "  * rollout        - rollout new changes for $(WEB_DEPLOYMENT) / $(WORKER_DEPLOYMENT)"
 	@echo "  * rollout-worker - rollout new changes for $(WORKER_DEPLOYMENT)"
 	@echo "  * rollout-proxy  - rollout new changes for $(PROXY_DEPLOYMENT)"
-	@echo "  * rollout-cron   - rollout new changes for $(CRON_DEPLOYMENT)"
-	@echo "  * rollback       - rollback latest changes for $(WEB_DEPLOYMENT) / $(WORKER_DEPLOYMENT) / $(CRON_DEPLOYMENT)"
+	@echo "  * rollback       - rollback latest changes for $(WEB_DEPLOYMENT) / $(WORKER_DEPLOYMENT)
 	@echo "  * exec           - exec a command to the $(WEB) container - make exec /bin/bash"
 	@echo "  * exec-nginx     - exec a command to the $(NGINX) container - make exec /bin/bash"
 	@echo "  * exec-worker    - exec a command to the $(WORKER) container - make exec /bin/bash"
-	@echo "  * exec-cron      - exec a command to the $(CRON) container - make exec /bin/bash"
 	@echo "  * logs           - tail pod logs for $(WEB)"
 	@echo "  * logs-nginx     - tail pod logs for $(WEB) NGINX"
 	@echo "  * logs-worker    - tail pod logs for $(WORKER)"
 	@echo "  * logs-proxy     - tail pod logs for $(PROXY)"
-	@echo "  * logs-cron      - tail pod logs for $(CRON)"
 	@echo "  * watch          - watch pod changes"
 	@echo "  * status         - status of all the resources"
 	@echo "  * db-migrate     - migrate new database changes"
@@ -74,14 +69,13 @@ deploy:
       bundle exec rake webpacker:clobber && \
       bundle exec rails webpacker:compile && \
       bundle exec rake assets:precompile; \
-      git update-index --assume-unchanged deploy/deploy.yml deploy/sidekiq.yml deploy/cron.yml cloudbuild.yaml; \
+      git update-index --assume-unchanged deploy/deploy.yml deploy/sidekiq.yml cloudbuild.yaml; \
       sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
       gcloud builds submit --config cloudbuild.yaml .; \
       sed -i '' "s/<VERSION>/$$version/g" deploy/deploy.yml; \
-      sed -i '' "s/<VERSION>/$$version/g" deploy/cron.yml; \
       sed -i '' "s/<VERSION>/$$version/g" deploy/sidekiq.yml; \
       kubectl apply -f ./deploy; \
-      git update-index --no-assume-unchanged deploy/deploy.yml deploy/sidekiq.yml deploy/cron.yml cloudbuild.yaml; \
+      git update-index --no-assume-unchanged deploy/deploy.yml deploy/sidekiq.yml cloudbuild.yaml; \
       git checkout deploy/ cloudbuild.yaml;\
     else \
       echo Working directory is dirty >&2; \
@@ -98,7 +92,6 @@ push:
 .PHONY: apply
 apply:
 	sed -i '' "s/<VERSION>/latest/g" deploy/deploy.yml; \
-	sed -i '' "s/<VERSION>/latest/g" deploy/cron.yml; \
 	sed -i '' "s/<VERSION>/latest/g" deploy/sidekiq.yml; \
   kubectl apply -f ./deploy; \
   git checkout deploy/
@@ -106,7 +99,6 @@ apply:
 .PHONY: apply-local
 apply-local:
 	sed -i '' "s/<VERSION>/$$(git rev-parse HEAD)/g" deploy/deploy.yml; \
-	sed -i '' "s/<VERSION>/$$(git rev-parse HEAD)/g" deploy/cron.yml; \
 	sed -i '' "s/<VERSION>/$$(git rev-parse HEAD)/g" deploy/sidekiq.yml; \
   kubectl apply -f ./deploy; \
   git checkout deploy/
@@ -114,13 +106,10 @@ apply-local:
 .PHONY: rollout
 rollout:
 	sed -i '' "s/<VERSION>/latest/g" deploy/deploy.yml; \
-	sed -i '' "s/<VERSION>/latest/g" deploy/cron.yml; \
 	sed -i '' "s/<VERSION>/latest/g" deploy/sidekiq.yml; \
 	kubectl patch deployment/$(WEB_DEPLOYMENT) \
 		-p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"; \
 	kubectl patch deployment/$(WORKER_DEPLOYMENT) \
-		-p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"; \
-	kubectl patch deployment/$(CRON_DEPLOYMENT) \
 		-p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"; \
 	kubectl patch deployment/$(PROXY_DEPLOYMENT) \
 		-p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}" \
@@ -136,16 +125,10 @@ rollout-proxy:
 	kubectl patch deployment/$(PROXY_DEPLOYMENT) \
 		-p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"date\":\"`date +'%s'`\"}}}}}"
 
-.PHONY: rollout-cron
-rollout-cron:
-	kubectl patch deployment/$(CRON_DEPLOYMENT) \
-		-p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"date\":\"`date +'%s'`\"}}}}}"
-
 .PHONY: rollback
 rollback:
 	kubectl rollout undo deployment/$(WEB_DEPLOYMENT) && \
 	kubectl rollout undo deployment/$(WORKER_DEPLOYMENT) && \
-	kubectl rollout undo deployment/$(CRON_DEPLOYMENT)
 
 .PHONY: exec
 exec:
@@ -163,10 +146,6 @@ exec-worker:
 exec-proxy:
 	kubectl exec -it $$(kubectl get pods | grep $(PROXY) | awk '/$(PROXY)/ { print $$1 }') -c $(PROXY) $(call args, );
 
-.PHONY: exec-cron
-exec-cron:
-	kubectl exec -it $$(kubectl get pods | grep $(CRON) | awk '/$(CRON)/ { print $$1 }') -c $(PROJECT) $(call args, );
-
 .PHONY: logs
 logs:
 	kubectl logs $$(kubectl get pods | grep $(WEB) | awk '/$(WEB)/ { print $$1 }') $(PROJECT) -f;
@@ -182,10 +161,6 @@ logs-worker:
 .PHONY: logs-proxy
 logs-proxy:
 	kubectl logs $$(kubectl get pods | grep $(PROXY) | awk '/$(PROXY)/ { print $$1 }') -f;
-
-.PHONY: logs-cron
-logs-cron:
-	kubectl logs $$(kubectl get pods | grep $(CRON) | awk '/$(CRON)/ { print $$1 }') -f;
 
 .PHONY: status
 status:
