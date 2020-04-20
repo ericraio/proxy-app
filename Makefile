@@ -42,10 +42,8 @@ all:
 build:
 	version=$$(git rev-parse HEAD); \
     BABEL_ENV=production RAILS_ENV=production && \
-    bundle exec rake assets:clobber && \
     bundle exec rake webpacker:clobber && \
     bundle exec rails webpacker:compile && \
-    bundle exec rake assets:precompile; \
 	git update-index --assume-unchanged cloudbuild.yaml; \
 	sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
 	gcloud builds submit --config cloudbuild.yaml .; \
@@ -58,28 +56,17 @@ docker-build:
 
 .PHONY: deploy
 deploy:
-	@status=$$(git status --porcelain); \
-    if test "x$${status}" = x; then \
-      version=$$(git rev-parse HEAD); \
-      git branch -f master; \
-      git pull origin master; \
-      bundle exec rails i18n:js:export; \
-      BABEL_ENV=production RAILS_ENV=production && \
-      bundle exec rake assets:clobber && \
-      bundle exec rake webpacker:clobber && \
-      bundle exec rails webpacker:compile && \
-      bundle exec rake assets:precompile; \
-      git update-index --assume-unchanged deploy/deploy.yml deploy/sidekiq.yml cloudbuild.yaml; \
-      sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
-      gcloud builds submit --config cloudbuild.yaml .; \
-      sed -i '' "s/<VERSION>/$$version/g" deploy/deploy.yml; \
-      sed -i '' "s/<VERSION>/$$version/g" deploy/sidekiq.yml; \
-      kubectl apply -f ./deploy; \
-      git update-index --no-assume-unchanged deploy/deploy.yml deploy/sidekiq.yml cloudbuild.yaml; \
-      git checkout deploy/ cloudbuild.yaml;\
-    else \
-      echo Working directory is dirty >&2; \
-    fi
+	version=$$(git rev-parse HEAD); \
+	git branch -f master; \
+	git pull origin master; \
+	git update-index --assume-unchanged deploy/deploy.yml deploy/sidekiq.yml cloudbuild.yaml; \
+	sed -i '' "s/<VERSION>/$$version/g" cloudbuild.yaml; \
+	gcloud builds submit --config cloudbuild.yaml .; \
+	sed -i '' "s/<VERSION>/$$version/g" deploy/deploy.yml; \
+	sed -i '' "s/<VERSION>/$$version/g" deploy/sidekiq.yml; \
+	kubectl apply -f ./deploy; \
+	git update-index --no-assume-unchanged deploy/deploy.yml deploy/sidekiq.yml cloudbuild.yaml; \
+	git checkout deploy/ cloudbuild.yaml;\
 
 .PHONY: pull
 pull:
