@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :domains
-  get '/', to: 'domains#index'
+  scope '/', module: :admin, as: :admin do
+    resources :domains
+    root to: 'domains#index', as: :home
+  end
 end
