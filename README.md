@@ -2,6 +2,7 @@
   <h1>Reverse Proxy App</h1>
   Reverse Proxy App is an application that enables caching and SSL for any website. This acts as a middleware layer between your domain and an origin host. The platform is a Ruby on Rails application with OpenResty, NGINX, and Kubernetes.
   <br/>
+  <a href="https://app.ericsbookclub.com" target="_blank">View the demo here</a>
 </div>
 
 <br/>
