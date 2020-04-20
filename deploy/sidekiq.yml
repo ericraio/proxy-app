@@ -18,29 +18,11 @@ spec:
         run: sidekiq
     spec:
       containers:
-      - name: proxyapp
+      - name: sidekiq
         image: gcr.io/rich-city-274720/proxyapp:latest
         imagePullPolicy: Always
         command: ["/bin/bash"]
         args: ["-c", "bundle exec sidekiq config/sidekiq.yml"]
-        env:
-        - name: REDIS_SSL_HOST
-          value: "redis-15849.c1.us-central1-2.gce.cloud.redislabs.com"
-        - name: REDIS_SSL_PORT
-          value: "15849"
-        - name: REDIS_SSL_AUTH
-          valueFrom:
-            secretKeyRef:
-              name: proxyapp-secrets
-              key: REDIS_SSL_AUTH
-      - name: proxyapp
-        image: gcr.io/rich-city-274720/proxyapp:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 3000
-        volumeMounts:
-        - mountPath: /tmp
-          name: web-sock
         env:
         - name: DATABASE_URL
           valueFrom:

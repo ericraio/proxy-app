@@ -1,0 +1,10 @@
+:concurrency: 10
+:queues:
+  - [critical, 10]
+  - [action_mailbox_routing, 7]
+  - [mailers, 7]
+  - [active_storage_analysis, 5]
+  - [default, 5]
+  - [active_storage_purge, 1]
+  - [action_mailbox_incineration, 1]
+  - [low, 1]
