@@ -1,5 +1,6 @@
 <div align="center">
   <h1>Reverse Proxy App</h1>
+  Highly Scalable, Extremely Simple Reverse Proxy. Just add your domain name and host in the dashboard then in your DNS, map a <i>CNAME</i> record to <i>proxy.ericsbookclub.com</i> (domain name for demo purposes)
   Reverse Proxy App is an application that enables caching and SSL for any website. This acts as a middleware layer between your domain and an origin host. The platform is a Ruby on Rails application with OpenResty, NGINX, and Kubernetes.
   <br/>
   <a href="https://app.ericsbookclub.com" target="_blank">View the demo here</a>
@@ -10,10 +11,21 @@
 
 ----
 
+## Screenshot
 
 ## Main Features
+-- **Free SSL with LetsEncrypt**
+  -- Secure data comunication with Encrypted data
+  -- SSL Auto-Renewal
+-- **HTTP Caching**
+  -- Cache Busting with Headers
+-- **Dashboard Management**
+  -- CRUD Domains
+  -- Search Domains
+  -- Pagination
 
-## Usage
+## Infrastructure
+![Infrastructure Diagram](https://raw.githubusercontent.com/ericraio/proxy-app/master/docs/images/diagram.png)
 
 ## Setting up Reverse Proxy App
 
@@ -24,8 +36,6 @@ Ensure that your local machine has the following dependencies installed.
 * Postgres
 * NodeJS
 * Redis
-
-## Testing
 
 ## Built With
 
