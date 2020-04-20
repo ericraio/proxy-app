@@ -18,6 +18,6 @@ module ProxyApp
     # the framework and any gems in your application.
     config.active_job.queue_adapter = :sidekiq
     config.hosts.clear
-    config.middleware.insert_before(ActionDispatch::Static, ReverseProxy::Middleware)
+    config.middleware.insert_before(Rack::Sendfile, ReverseProxy::Middleware)
   end
 end
