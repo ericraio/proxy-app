@@ -8,10 +8,10 @@
 
 <br/>
 
-
 ----
 
 ## Screenshot
+![Screenshot](https://raw.githubusercontent.com/ericraio/proxy-app/master/docs/images/screenshot.png)
 
 ## Main Features
 -- **Free SSL with LetsEncrypt**

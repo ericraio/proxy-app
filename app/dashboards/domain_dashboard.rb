@@ -25,7 +25,6 @@ class DomainDashboard < Administrate::BaseDashboard
   id
   host
   origin
-  verified
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -34,7 +33,6 @@ class DomainDashboard < Administrate::BaseDashboard
   id
   host
   origin
-  verified
   created_at
   updated_at
   ].freeze
@@ -45,7 +43,6 @@ class DomainDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
   host
   origin
-  verified
   ].freeze
 
   # COLLECTION_FILTERS
